@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>YouTube Progress Tracker</title>
+  <style>
+  body {
+    background-color: black;
+    color: white;
+    font-family: sans-serif;
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  #player-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 8px;
+  }
+</style>
+</head>
+<body>
+  <h1>Friends for my Mosers!</h1>
+  <div id="player-container">
+    <div id="player"></div>
+    <button onclick="resetProgress()">🔁 Restart From Beginning</button>
+  </div>
+
+  <script>
+    let player;
+    const playlistId = "PLTJ92Pz1IfBVTzCWVoOCZdvpaWxbzmevo"; // Your playlist ID
+
+    function onYouTubeIframeAPIReady() {
+      const savedIndex = localStorage.getItem("lastPlayedIndex"); // Get saved index
+
+      // Default to 0 if no index is saved
+      const startIndex = savedIndex ? parseInt(savedIndex) - 1 : 0; // Adjust for 0-based indexing
+
+      function onPlayerStateChange(event) {
+        if (event.data === YT.PlayerState.PLAYING) {
+          const index = player.getPlaylistIndex();
+          localStorage.setItem("lastPlayedIndex", index + 2); // Save index + 1 to match your numbering system
+        }
+      }
+
+      player = new YT.Player("player", {
+        height: "360",
+        width: "640",
+        playerVars: {
+          listType: "playlist",
+          list: playlistId,
+          index: startIndex, // Start from saved index
+          autoplay: 1,
+        },
+        events: {
+          onStateChange: onPlayerStateChange,
+        },
+      });
+    }
+
+    function resetProgress() {
+      localStorage.removeItem("lastPlayedIndex"); // Reset saved index
+      alert("Progress reset! Refresh to start from the beginning.");
+    }
+  </script>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
+</body>
+</html>
